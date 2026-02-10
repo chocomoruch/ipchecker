@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPアドレス確認くん</title>
+  <link rel="icon" href="favicon.ico">
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --success: #10b981;
+            --error: #f43f5e;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            height: 100vh; overflow: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 90%; max-width: 450px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 1.1rem; color: var(--primary);
+            margin-bottom: 2rem; letter-spacing: 1px;
+        }
+
+        .ip-group {
+            margin-bottom: 2rem; text-align: left;
+            position: relative;
+        }
+
+        label {
+            display: block; font-size: 0.85rem;
+            color: #94a3b8; margin-bottom: 0.6rem;
+            font-weight: bold;
+        }
+
+        .ip-address {
+            font-family: 'Cascadia Code', Consolas, monospace;
+            font-size: 1.1rem;
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: 4px solid var(--secondary);
+            word-break: break-all;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ip-address:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.1);
+        }
+
+        .ip-address.error-text {
+            border-left-color: var(--error);
+            color: var(--error);
+        }
+
+        .ip-address.error-text:hover {
+            border-color: var(--error);
+            box-shadow: 0 5px 15px rgba(244, 63, 94, 0.2);
+            transform: translateY(0);
+        }
+
+        .copy-badge {
+            position: absolute;
+            right: 0; top: -28px;
+            background: var(--success);
+            color: white;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            pointer-events: none;
+        }
+
+        .copy-badge.error-badge {
+            background: var(--error);
+        }
+
+        .copy-badge.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            letter-spacing: 1px;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        .creator-link {
+            color: var(--secondary);
+            font-weight: bold;
+            text-decoration: none;
+            position: relative;
+            padding: 2px 4px;
+            transition: all 0.3s ease;
+        }
+
+        .creator-link:hover {
+            color: var(--primary);
+            text-shadow: 0 0 8px rgba(0, 242, 254, 0.6);
+        }
+
+        /* ▼▼▼ ここを復活させました ▼▼▼ */
+        /* 下線のオシャレなアニメーション */
+        .creator-link::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 1px;
+            bottom: 0; left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .creator-link:hover::after {
+            width: 100%;
+        }
+        /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
+        .loading { color: #64748b; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>現在の接続情報</h1>
+        
+        <div class="ip-group">
+            <label>IPv4アドレス (クリックでコピー)</label>
+            <div id="badge-v4" class="copy-badge">コピーしました！</div>
+            <div id="ipv4" class="ip-address loading" onclick="copyAction('ipv4', 'badge-v4')">スキャン中...</div>
+        </div>
+
+        <div class="ip-group">
+            <label>IPv6アドレス (クリックでコピー)</label>
+            <div id="badge-v6" class="copy-badge">コピーしました！</div>
+            <div id="ipv6" class="ip-address loading" onclick="copyAction('ipv6', 'badge-v6')">スキャン中...</div>
+        </div>
+    </div>
+
+    <footer>
+        Created by <a href="https://linktr.ee/chocomoruch" target="_blank" class="creator-link">ChocomoruCh</a>and<a href="https://gemini.google.com/app" target="_blank" class="creator-link">Gemini</a>
+    </footer>
+
+    <script>
+        const updateIP = (id, url) => {
+            const el = document.getElementById(id);
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    el.innerText = data.ip;
+                    el.classList.remove('loading');
+                })
+                .catch(() => {
+                    el.innerText = "検出されませんでした";
+                    el.classList.remove('loading');
+                    el.classList.add('error-text');
+                });
+        };
+
+        function copyAction(elementId, badgeId) {
+            const el = document.getElementById(elementId);
+            const badge = document.getElementById(badgeId);
+            const text = el.innerText;
+
+            if (text.includes("スキャン中")) return;
+
+            if (text.includes("検出されませんでした")) {
+                badge.innerText = "コピーに失敗しました";
+                badge.classList.add('error-badge');
+                badge.classList.add('show');
+                setTimeout(() => {
+                    badge.classList.remove('show');
+                    setTimeout(() => {
+                        badge.classList.remove('error-badge');
+                        badge.innerText = "コピーしました！";
+                    }, 300);
+                }, 1500);
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    badge.classList.add('show');
+                    setTimeout(() => badge.classList.remove('show'), 1500);
+                });
+            }
+        }
+
+        setTimeout(() => updateIP('ipv4', 'https://api4.ipify.org?format=json'), 200);
+        setTimeout(() => updateIP('ipv6', 'https://api6.ipify.org?format=json'), 500);
+    </script>
+</body>
+</html>
