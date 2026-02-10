@@ -7,7 +7,10 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yuru7/udev-gothic@main/udev-gothic.css">
+    <meta property="og:title" content="IPアドレス確認くん Pro">
+    <meta property="og:description" content="ワンタップでIPv4/IPv6を一括コピーできるサイバーな便利ツール。">
+    <meta property="og:image" content="favicon.png">
+    <meta property="og:type" content="website">
     
     <title>IPアドレス確認くん Pro</title>
     <style>
@@ -19,8 +22,6 @@
             --text: #f8fafc;
             --success: #10b981;
             --error: #f43f5e;
-            /* フォントスタックの設定 */
-            --font-udev: "UDEV Gothic", "Cascadia Code", Consolas, monospace;
         }
 
         body {
@@ -55,17 +56,14 @@
         .ip-group { margin-bottom: 1.5rem; text-align: left; position: relative; }
         label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.6rem; font-weight: bold; }
 
-        /* ▼▼▼ IP表示部分に UDEV Gothic を適用 ▼▼▼ */
         .ip-address {
-            font-family: var(--font-udev);
-            font-size: 1.2rem; /* 少し大きくするとUDEVの美しさが際立ちます */
-            background: rgba(0,0,0,0.3);
+            font-family: 'Cascadia Code', Consolas, monospace;
+            font-size: 1.1rem; background: rgba(0,0,0,0.3);
             padding: 1rem; border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
             border-left: 4px solid var(--secondary);
             word-break: break-all; cursor: pointer;
             transition: all 0.2s ease;
-            letter-spacing: 0.05em; /* 視認性アップ */
         }
 
         .ip-address:hover {
@@ -82,7 +80,6 @@
             border-radius: 20px; opacity: 0;
             transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             pointer-events: none;
-            font-family: sans-serif; /* バッジは読みやすさ優先 */
         }
         .copy-badge.error-badge { background: var(--error); }
         .copy-badge.show { opacity: 1; transform: translateY(0); }
@@ -100,7 +97,6 @@
             justify-content: center; gap: 10px;
             transition: all 0.3s ease; outline: none;
             width: 100%;
-            font-family: inherit;
         }
 
         .btn-bulk { background: var(--primary); color: var(--bg); }
@@ -167,7 +163,6 @@
     </footer>
 
     <script>
-        // JS部分は以前と同じ（IP取得、コピー、共有ロジック）
         function copyBulk() {
             const v4 = document.getElementById('ipv4').innerText;
             const v6 = document.getElementById('ipv6').innerText;
@@ -212,7 +207,7 @@
         }
 
         document.getElementById('shareButton').addEventListener('click', async () => {
-            const shareData = { title: 'IPアドレス確認くん', text: 'IP確認ツール', url: window.location.href };
+            const shareData = { title: 'IPアドレス確認くん', text: 'IPを一括コピーできる便利ツール', url: window.location.href };
             if (navigator.share) {
                 try { await navigator.share(shareData); } catch (err) {}
             } else {
@@ -242,4 +237,3 @@
     </script>
 </body>
 </html>
-
