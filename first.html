@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your IP Address</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.2rem; color: #555; margin-bottom: 0.5rem; }
+        p { font-family: monospace; font-size: 1.5rem; color: #333; margin: 0 0 1.5rem 0; word-break: break-all; }
+        .loading { color: #999; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IPv4 Address:</h1>
+        <p id="ipv4" class="loading">Loading...</p>
+
+        <h1>IPv6 Address:</h1>
+        <p id="ipv6" class="loading">Loading...</p>
+    </div>
+
+    <script>
+        // IPv4を取得
+        fetch('https://api4.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => document.getElementById('ipv4').innerText = data.ip)
+            .catch(() => document.getElementById('ipv4').innerText = "Not detected / No IPv4");
+
+        // IPv6を取得
+        fetch('https://api6.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => document.getElementById('ipv6').innerText = data.ip)
+            .catch(() => document.getElementById('ipv6').innerText = "Not detected / No IPv6");
+    </script>
+</body>
+</html>
