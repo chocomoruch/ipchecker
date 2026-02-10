@@ -173,10 +173,10 @@
             const v6 = document.getElementById('ipv6').innerText;
             const badge = document.getElementById('bulk-badge');
             let copyText = "";
-            if (!v4.includes("中") && !v4.includes("ません")) copyText += `v4:${v4}`;
+            if (!v4.includes("中") && !v4.includes("ません")) copyText += `v4: ${v4}`;
             if (!v6.includes("中") && !v6.includes("ません")) {
                 if (copyText !== "") copyText += "\n";
-                copyText += `v6:${v6}`;
+                copyText += `v6: ${v6}`;
             }
             if (copyText === "") {
                 badge.innerText = "コピーできる情報がありません";
@@ -242,3 +242,4 @@
     </script>
 </body>
 </html>
+
