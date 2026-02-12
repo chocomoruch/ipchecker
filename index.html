@@ -167,28 +167,64 @@
     </footer>
 
     <script>
-        // JS部分は以前と同じ（IP取得、コピー、共有ロジック）
-        function copyBulk() {
-            const v4 = document.getElementById('ipv4').innerText;
-            const v6 = document.getElementById('ipv6').innerText;
-            const badge = document.getElementById('bulk-badge');
-            let copyText = "";
-            if (!v4.includes("中") && !v4.includes("ません")) copyText += `v4:${v4}`;
-            if (!v6.includes("中") && !v6.includes("ません")) {
-                if (copyText !== "") copyText += "\n";
-                copyText += `v6:${v6}`;
+    function copyBulk() {
+        const v4El = document.getElementById('ipv4');
+        const v6El = document.getElementById('ipv6');
+        const badge = document.getElementById('bulk-badge');
+        
+        let results = [];
+        
+        // v4の取得（クラス判定で確実に）
+        if (!v4El.classList.contains('loading') && !v4El.classList.contains('error-text')) {
+            results.push(`v4: ${v4El.innerText.trim()}`);
+        }
+        
+        // v6の取得
+        if (!v6El.classList.contains('loading') && !v6El.classList.contains('error-text')) {
+            const v6Text = v6El.innerText.trim();
+            // 重複チェック
+            if (!results.some(r => r.includes(v6Text))) {
+                results.push(`v6: ${v6Text}`);
             }
-            if (copyText === "") {
-                badge.innerText = "コピーできる情報がありません";
-                badge.classList.add('error-badge');
-            } else {
-                navigator.clipboard.writeText(copyText);
+        }
+    
+        if (results.length === 0) {
+            badge.innerText = "コピーできる情報がありません";
+            badge.classList.add('error-badge');
+        } else {
+            // 【重要】ここで改行コードを使って結合
+            let finalString = results.join('\n');
+        
+            // もし万が一、どこかでエンコードされていたら強制デコードする（念のため）
+            try {
+                if (finalString.includes('%')) {
+                    finalString = decodeURIComponent(finalString);
+                }
+            } catch (e) {
+                // デコード失敗時はそのまま（%が含まれるIPv6などのため）
+            }
+        
+            // コピー実行
+            navigator.clipboard.writeText(finalString).then(() => {
                 badge.innerText = "まとめてコピーしました！";
                 badge.classList.remove('error-badge');
-            }
-            badge.classList.add('show');
-            setTimeout(() => badge.classList.remove('show'), 2000);
+            }).catch(() => {
+                // フォールバック：navigator.clipboardがダメな場合（古い環境など）
+                const textArea = document.createElement("textarea");
+                textArea.value = finalString;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                badge.innerText = "まとめてコピーしました！";
+                badge.classList.remove('error-badge');
+            });
         }
+    
+        badge.classList.add('show');
+        setTimeout(() => badge.classList.remove('show'), 2000);
+    }
 
         function copyAction(elementId, badgeId) {
             const el = document.getElementById(elementId);
@@ -242,3 +278,4 @@
     </script>
 </body>
 </html>
+
