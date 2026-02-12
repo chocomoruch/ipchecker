@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yuru7/udev-gothic@main/udev-gothic.css">
     
     <title>IPアドレス確認くん Pro</title>
@@ -19,7 +17,6 @@
             --text: #f8fafc;
             --success: #10b981;
             --error: #f43f5e;
-            /* フォントスタックの設定 */
             --font-udev: "UDEV Gothic", "Cascadia Code", Consolas, monospace;
         }
 
@@ -51,21 +48,19 @@
         }
 
         h1 { font-size: 1.1rem; color: var(--primary); margin-bottom: 2rem; letter-spacing: 1px; }
-
         .ip-group { margin-bottom: 1.5rem; text-align: left; position: relative; }
         label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.6rem; font-weight: bold; }
 
-        /* ▼▼▼ IP表示部分に UDEV Gothic を適用 ▼▼▼ */
         .ip-address {
             font-family: var(--font-udev);
-            font-size: 1.2rem; /* 少し大きくするとUDEVの美しさが際立ちます */
+            font-size: 1.2rem;
             background: rgba(0,0,0,0.3);
             padding: 1rem; border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
             border-left: 4px solid var(--secondary);
             word-break: break-all; cursor: pointer;
             transition: all 0.2s ease;
-            letter-spacing: 0.05em; /* 視認性アップ */
+            letter-spacing: 0.05em;
         }
 
         .ip-address:hover {
@@ -73,7 +68,14 @@
             transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 242, 254, 0.1);
         }
 
+        /* エラー表示とホバー修正 */
         .ip-address.error-text { border-left-color: var(--error); color: var(--error); }
+        .ip-address.error-text:hover {
+            border-color: var(--error);
+            box-shadow: 0 5px 15px rgba(244, 63, 94, 0.2);
+            background: rgba(244, 63, 94, 0.05);
+            transform: translateY(0);
+        }
 
         .copy-badge {
             position: absolute; right: 0; top: -28px;
@@ -82,40 +84,27 @@
             border-radius: 20px; opacity: 0;
             transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             pointer-events: none;
-            font-family: sans-serif; /* バッジは読みやすさ優先 */
         }
         .copy-badge.error-badge { background: var(--error); }
         .copy-badge.show { opacity: 1; transform: translateY(0); }
 
-        .button-group {
-            margin-top: 2.5rem;
-            display: flex; flex-direction: column; gap: 12px;
-        }
-
+        .button-group { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 12px; }
         .btn {
             border: 1px solid var(--primary);
             padding: 0.8rem; border-radius: 12px;
             font-size: 0.9rem; font-weight: bold;
             cursor: pointer; display: flex; align-items: center;
             justify-content: center; gap: 10px;
-            transition: all 0.3s ease; outline: none;
-            width: 100%;
-            font-family: inherit;
+            transition: all 0.3s ease; outline: none; width: 100%;
         }
-
         .btn-bulk { background: var(--primary); color: var(--bg); }
         .btn-bulk:hover { box-shadow: 0 0 20px rgba(0, 242, 254, 0.6); transform: scale(1.02); }
-
         .btn-share { background: rgba(0, 242, 254, 0.1); color: var(--primary); }
         .btn-share:hover { background: rgba(0, 242, 254, 0.2); transform: translateY(-2px); }
 
         svg { fill: currentColor; width: 18px; height: 18px; }
 
-        footer {
-            margin-top: 2rem; font-size: 0.85rem; color: #64748b;
-            letter-spacing: 1px; animation: fadeInUp 1s ease-out 0.5s both;
-        }
-
+        footer { margin-top: 2rem; font-size: 0.85rem; color: #64748b; letter-spacing: 1px; }
         .creator-link {
             color: var(--secondary); font-weight: bold; text-decoration: none;
             position: relative; padding: 2px 4px; transition: all 0.3s ease;
@@ -126,6 +115,14 @@
             bottom: 0; left: 0; background-color: var(--primary); transition: width 0.3s ease;
         }
         .creator-link:hover::after { width: 100%; }
+
+        .version-link {
+            position: absolute; bottom: 12px; right: 18px;
+            font-size: 0.7rem; color: #6c7d95; font-family: var(--font-udev);
+            letter-spacing: 0.1em; text-decoration: none;
+            opacity: 0.8; transition: all 0.3s ease;
+        }
+        .version-link:hover { opacity: 1; color: var(--primary); text-shadow: 0 0 5px rgba(0, 242, 254, 0.5); }
 
         .loading { color: #64748b; font-style: italic; }
     </style>
@@ -154,92 +151,58 @@
                 <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                 IPを一括コピー
             </button>
-
             <button id="shareButton" class="btn btn-share">
                 <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
                 このツールを共有
             </button>
         </div>
+
+        <a href="https://github.com/chocomoruch/ipchecker/tree/main" target="_blank" class="version-link">v1.2.0</a>
     </div>
 
     <footer>
         Created by <a href="https://linktr.ee/chocomoruch" target="_blank" class="creator-link">ChocomoruCh</a>and<a href="https://gemini.google.com/app" target="_blank" class="creator-link">Gemini</a>
-        Ver.1.1
     </footer>
 
     <script>
-    function copyBulk() {
-        const v4El = document.getElementById('ipv4');
-        const v6El = document.getElementById('ipv6');
-        const badge = document.getElementById('bulk-badge');
-        
-        let results = [];
-        
-        // v4の取得（クラス判定で確実に）
-        if (!v4El.classList.contains('loading') && !v4El.classList.contains('error-text')) {
-            results.push(`v4: ${v4El.innerText.trim()}`);
-        }
-        
-        // v6の取得
-        if (!v6El.classList.contains('loading') && !v6El.classList.contains('error-text')) {
-            const v6Text = v6El.innerText.trim();
-            // 重複チェック
-            if (!results.some(r => r.includes(v6Text))) {
-                results.push(`v6: ${v6Text}`);
+        function copyBulk() {
+            const v4El = document.getElementById('ipv4');
+            const v6El = document.getElementById('ipv6');
+            const badge = document.getElementById('bulk-badge');
+            let results = [];
+            if (!v4El.classList.contains('loading') && !v4El.classList.contains('error-text')) {
+                results.push(`v4: ${v4El.innerText.trim()}`);
             }
-        }
-    
-        if (results.length === 0) {
-            badge.innerText = "コピーできる情報がありません";
-            badge.classList.add('error-badge');
-        } else {
-            // 【重要】ここで改行コードを使って結合
-            let finalString = results.join('\n');
-        
-            // もし万が一、どこかでエンコードされていたら強制デコードする（念のため）
-            try {
-                if (finalString.includes('%')) {
-                    finalString = decodeURIComponent(finalString);
+            if (!v6El.classList.contains('loading') && !v6El.classList.contains('error-text')) {
+                const v6Text = v6El.innerText.trim();
+                if (!results.some(r => r.includes(v6Text))) {
+                    results.push(`v6: ${v6Text}`);
                 }
-            } catch (e) {
-                // デコード失敗時はそのまま（%が含まれるIPv6などのため）
             }
-        
-            // コピー実行
-            navigator.clipboard.writeText(finalString).then(() => {
-                badge.innerText = "まとめてコピーしました！";
-                badge.classList.remove('error-badge');
-            }).catch(() => {
-                // フォールバック：navigator.clipboardがダメな場合（古い環境など）
-                const textArea = document.createElement("textarea");
-                textArea.value = finalString;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                
-                badge.innerText = "まとめてコピーしました！";
-                badge.classList.remove('error-badge');
-            });
+            if (results.length === 0) {
+                badge.innerText = "コピーできる情報がありません";
+                badge.classList.add('error-badge');
+            } else {
+                let finalString = results.join('\n');
+                navigator.clipboard.writeText(finalString).then(() => {
+                    badge.innerText = "まとめてコピーしました！";
+                    badge.classList.remove('error-badge');
+                });
+            }
+            badge.classList.add('show');
+            setTimeout(() => badge.classList.remove('show'), 2000);
         }
-    
-        badge.classList.add('show');
-        setTimeout(() => badge.classList.remove('show'), 2000);
-    }
 
         function copyAction(elementId, badgeId) {
             const el = document.getElementById(elementId);
             const badge = document.getElementById(badgeId);
             const text = el.innerText;
-            if (text.includes("中")) return;
-            if (text.includes("ません")) {
+            if (el.classList.contains('loading')) return;
+            if (el.classList.contains('error-text')) {
                 badge.innerText = "コピーに失敗しました";
                 badge.classList.add('error-badge');
                 badge.classList.add('show');
-                setTimeout(() => {
-                    badge.classList.remove('show');
-                    setTimeout(() => { badge.classList.remove('error-badge'); badge.innerText = "コピーしました！"; }, 300);
-                }, 1500);
+                setTimeout(() => { badge.classList.remove('show'); setTimeout(() => { badge.classList.remove('error-badge'); badge.innerText = "コピーしました！"; }, 300); }, 1500);
             } else {
                 navigator.clipboard.writeText(text).then(() => {
                     badge.classList.add('show');
@@ -249,7 +212,7 @@
         }
 
         document.getElementById('shareButton').addEventListener('click', async () => {
-            const shareData = { title: 'IPアドレス確認くん', text: 'IP確認ツール', url: window.location.href };
+            const shareData = { title: 'IPアドレス確認くん Pro', text: 'IP確認ツール', url: window.location.href };
             if (navigator.share) {
                 try { await navigator.share(shareData); } catch (err) {}
             } else {
@@ -279,5 +242,3 @@
     </script>
 </body>
 </html>
-
-
